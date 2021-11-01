@@ -1,11 +1,18 @@
 stages:
-  - docker
+- deploy
+deploy:
+image: docker:latest
+stage: deploy
+variables:
+DOCKER_DRIVER: overlay
 services:
-  - docker:dind
-docker-job:
-  stage: docker
-  image: docker:dind
-  script:
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker build -t registry.gitlab.com/xxxxxx/gitlab-ci-cd .
-    - docker push registry.gitlab.com/xxxxxx/gitlab-ci-cd
+- docker:dind
+script:
+- docker build -t testingcd.azurecr.io/testappcd:latest .
+- echo "$DOCKER_PASSWD" | docker login $DOCKER_REPOSITORY --username $DOCKER_USER --password-stdin
+- docker push testingcd.azurecr.io/testappcd:latest
+only:
+- master
+environment:
+name: app-service
+url: https://testappcd.azurewebsites.net
