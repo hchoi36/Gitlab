@@ -1,4 +1,4 @@
-FROM ubuntu:latest
-WORKDIR /root
-RUN apt-get update && apt-get install python -y
-RUN python --version
+FROM nginx:14.2-alpine
+COPY . /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx","-g","daemon off;"]
